@@ -1,0 +1,18 @@
+{
+  "name": "weatherbot-nlp",
+  "version": "1.0.0",
+  "description": "webhook for weatherbot on api.ai",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "config": "^1.25.1",
+    "express": "^4.15.2",
+    "request": "^2.81.0"
+  }
+}
