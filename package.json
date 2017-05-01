@@ -1,7 +1,7 @@
 {
-  "name": "weatherbot-nlp",
+  "name": "mta-nlp",
   "version": "1.0.0",
-  "description": "webhook for weatherbot on api.ai",
+  "description": "mta on api.ai",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -13,6 +13,9 @@
     "body-parser": "^1.17.1",
     "config": "^1.25.1",
     "express": "^4.15.2",
-    "request": "^2.81.0"
+    "mta-gtfs-realtime-bindings": "0.0.5",
+    "protobufjs": "^6.7.3",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0"
   }
 }
