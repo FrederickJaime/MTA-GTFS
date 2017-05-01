@@ -4,7 +4,10 @@ const express = require('express'),
   rp = require('request-promise'),
   protobuf = require("protobufjs"),
   bodyParser = require('body-parser'),
-  app = express();
+  app = express(),
+
+  mtaKey = "e853b54c8671a51a9f67a2d99f014264",
+  mtaFeedId = "&feed_id=1";
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 5000);
@@ -12,7 +15,7 @@ app.set('port', process.env.PORT || 5000);
 
 rp({
     method: 'GET',
-    url: 'http://datamine.mta.info/mta_esi.php?key=e853b54c8671a51a9f67a2d99f014264&feed_id=1',
+    url: `http://datamine.mta.info/mta_esi.php?key=${mtaKey}${mtaFeedId}`,
     encoding: null,
 }).then((buf) => {
     const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(buf);
