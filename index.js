@@ -9,6 +9,7 @@ const express = require('express'),
   Long = require("long"),
   Mta = require('mta-gtfs'),
   bodyParser = require('body-parser'),
+
   app = express(),
 
   mtaKey = "e853b54c8671a51a9f67a2d99f014264",
@@ -33,38 +34,89 @@ let mta = new Mta({
 mta.status('subway').then(function (result) {
   console.log(result);
 });
-*/
-/*
-mta.schedule(635).then(function (result) {
-  console.log(result);
+
+
+
+mta.stop(635).then(function (stop) {
+
+    if(stop.stop_name === '14 St - Union Sq'){
+        console.log(stop.stop_id);
+    }
+
+  
 });
 */
+const subwayDelay = (myTrain) => new Promise((res, rej) => {
+
+     let x =  mta.status('subway').then(function (allStatus) {
+                    let z = allStatus.filter(status =>{
+                        
+                        if(status.status != 'GOOD SERVICE'){
+                            return status
+                        }
+                    }).map(status => { return status.name });
+                    
+                    return z.toString();
+                    
+                }).catch(function (err) {
+                    console.log(err);
+                });
+
+    res(x);
+
+});
 
 
-mta.stop().then(function (result) {
-  console.log(result);
-}).catch(function (err) {
-  console.log(err);
+mta.status('subway').then(function (allStatus) {
+  //console.log(allStatus);
+  let myTrain = '7';
+  const v = allStatus.filter(status =>{
+
+    if(status.status != 'GOOD SERVICE'){
+       //console.log(status.name);
+        if(status.name.includes(myTrain)){
+            //return status;
+            //return (myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
+            console.log(myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
+        }
+    }
+  });
+  
+  
 });
 
 /*
 mta.stop(635).then(function (result) {
-  console.log(result);
+ 
+    console.log(result);
+
+    for (var key in result) {
+        if (result.hasOwnProperty(key)) {
+            console.log(key + " -> " + result[key]);
+        }
+    }
+
 });
+*/
+/*
+
 mta.schedule(635).then(function (result) {
   console.log(result);
 });
 */
 
 
-    app.get('/webhook', (req, res) => {
+app.get('/webhook', (req, res) => {
     let response;
-    console.log(req.body);
 
-    res.send(`<div>ddd</div>`);
-    
+
+    response = subwayDelay('7').then(data =>{
+        res.send(data);
 
     });
+
+
+});
 
 
 
