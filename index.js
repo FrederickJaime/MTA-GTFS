@@ -46,40 +46,71 @@ mta.stop(635).then(function (stop) {
   
 });
 */
-const subwayDelay = (myTrain) => new Promise((res, rej) => {
-
-     let x =  mta.status('subway').then(function (allStatus) {
+const allSubwayDelays = () => new Promise((res, rej) => {
+     
+     let delays =  mta.status('subway').then(function (allStatus) {
                     let z = allStatus.filter(status =>{
-                        
                         if(status.status != 'GOOD SERVICE'){
                             return status
                         }
-                    }).map(status => { return status.name });
+                    }).map(status => {
+                        return status.name
+                    });
                     
-                    return z.toString();
+                    return z;
                     
                 }).catch(function (err) {
-                    console.log(err);
+                    rej(err);
                 });
-
-    res(x);
+    
+    res(delays);
 
 });
 
 
+const subwayStatus = ( train ) => new Promise((res, rej) => {
+
+     let trainStatus =  mta.status('subway').then(function (allStatus) {
+                    let b = allStatus.filter(status =>{
+                        if(status.name.includes( train )){
+                            return status;
+                        }
+                    });
+                    
+                    const {
+                        name:trainLine,
+                        status,
+                        text
+                    } = b[0];
+                   // console.log(b);
+                    let trainMessage = `Subway Line ${train} has ${status.toLowerCase()}.
+                    
+                    ${text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " ")}`;
+
+                    return trainMessage ;
+                    
+                }).catch(function (err) {
+                    rej(err);
+                });
+
+    res(trainStatus);
+});
+
+
+
 mta.status('subway').then(function (allStatus) {
   //console.log(allStatus);
-  let myTrain = '7';
+  let myTrain = '3';
   const v = allStatus.filter(status =>{
 
-    if(status.status != 'GOOD SERVICE'){
+    //if(status.status != 'GOOD SERVICE'){
        //console.log(status.name);
         if(status.name.includes(myTrain)){
             //return status;
             //return (myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
-            console.log(myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
+            //console.log('Subway Line '+myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
         }
-    }
+   // }
   });
   
   
@@ -108,11 +139,14 @@ mta.schedule(635).then(function (result) {
 
 app.get('/webhook', (req, res) => {
     let response;
-
-
-    response = subwayDelay('7').then(data =>{
+    //console.log(req.body.result.action);
+    /* Functions (none of these are finalized ):
+        allSubwayDelays() // list of all subway delays | no paramater
+        subwayStatus() // get specific train status | needs train ex: subwayStatus('7')
+    
+    */
+    response = subwayStatus('F').then(data =>{
         res.send(data);
-
     });
 
 
