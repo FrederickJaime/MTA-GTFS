@@ -10,10 +10,7 @@ const express = require('express'),
   Mta = require('mta-gtfs'),
   bodyParser = require('body-parser'),
 
-  app = express(),
-
-  mtaKey = "e853b54c8671a51a9f67a2d99f014264",
-  mtaFeedId = "&feed_id=1";
+  app = express();
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 5000);
@@ -98,23 +95,7 @@ const subwayStatus = ( train ) => new Promise((res, rej) => {
 
 
 
-mta.status('subway').then(function (allStatus) {
-  //console.log(allStatus);
-  let myTrain = '3';
-  const v = allStatus.filter(status =>{
 
-    //if(status.status != 'GOOD SERVICE'){
-       //console.log(status.name);
-        if(status.name.includes(myTrain)){
-            //return status;
-            //return (myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
-            //console.log('Subway Line '+myTrain+' has '+status.status+'  '+status.text.replace(/<\/?[^>]+(>|$)/g, "").replace(/(&nbsp;)/g," ").replace(/\s+/g, " "));
-        }
-   // }
-  });
-  
-  
-});
 
 /*
 mta.stop(635).then(function (result) {
