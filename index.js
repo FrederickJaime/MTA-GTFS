@@ -10,27 +10,105 @@ const express = require('express'),
   Mta = require('mta-gtfs'),
   bodyParser = require('body-parser'),
 
-  app = express();
+  app = express(),
+
+  mtaKey = 'e853b54c8671a51a9f67a2d99f014264',
+  mtaFeedId = "&feed_id=1";
+  /*
+    Feed IDs with Train Lines
+    1  : 123456S
+    16 : NQRW
+    21 : BD
+    2  : L
+    11 : Staten Island Railway
+  */
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 5000);
 
 
 let mta = new Mta({
-  key: 'e853b54c8671a51a9f67a2d99f014264', // only needed for mta.schedule() method
+  key: mtaKey, // only needed for mta.schedule() method
   feed_id: 1                  // optional, default = 1
 });
 
 
 
+rp({
+    method: 'GET',
+    url: `http://datamine.mta.info/mta_esi.php?key=${mtaKey}${mtaFeedId}`,
+    encoding: null,
+}).then((buf) => {
+    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(buf);
+
+   // console.log(feed.entity);
+
+    const trips = feed.entity.filter(tripupdate =>{
+        if (tripupdate.trip_update) {
+            if(tripupdate.trip_update.trip.nyct_trip_descriptor.is_assigned){
+               // console.log(tripupdate.trip_update.trip.nyct_trip_descriptor.is_assigned);
+                return tripupdate;
+            }   
+        }
+    }).filter(trip =>{
+       // console.log(trip.trip_update.trip.nyct_trip_descriptor);
+       if (trip.trip_update) {
+           // console.log(trip.trip_update);
+           // console.log(trip.trip_update.stop_time_update[0]);
+            
+       }
+        
+       
+
+    });
+
+   // const trips = feed.filter()
+
+   /*
+    feed.entity.forEach((entity) => {
+
+        if (entity.trip_update) {
+            console.log(entity.trip_update);
+            
+            
+        }
+    });
+    */
+}).catch(e => {
+
+  console.log(e);
+
+});
 
 
 
+
+
+mta.status('bus').then(function (result) {
+    const busStat = result.map(bus =>{
+
+        //console.log(bus.name+' : '+bus.status);
+
+    });
+});
+mta.stop('101').then(function (result) {
+  //console.log(result);
+}).catch(function (err) {
+  //console.log(err);
+});
+
+mta.status('subway').then(function (result) {
+                let z = result.filter(status =>{
+                    if(status.status != 'GOOD SERVICE'){
+                        //console.log(status.name);
+                    }
+                }).map(status => {
+                    //return status.name
+                });
+});
 
 /*
-mta.status('subway').then(function (result) {
-  console.log(result);
-});
+
 
 
 
@@ -42,7 +120,50 @@ mta.stop(635).then(function (stop) {
 
   
 });
+
 */
+mta.schedule(635).then(function (result) {
+    
+    //console.log(result.schedule[635].N);
+    const northboundTrains = result.schedule[635].N.map( train =>{
+
+        //console.log(train.routeId);
+        return train.routeId;
+
+    });
+    const southboundTrains = result.schedule[635].S.map( train =>{
+
+        //console.log(train.routeId);
+        return train.routeId;
+
+    });
+
+    console.log('NorthBound '+[...new Set(northboundTrains)]+' | SouthBound '+ [...new Set(southboundTrains)]);
+    //const labels = [...new Set(result.schedule[635].N)];
+    //console.log(northboundTrains);
+   
+});
+
+const stationTrains = (trainStation) => new Promise((res, rej) => {
+
+    let trains = mta.schedule(trainStation).then(function (allTrains) {
+
+            const trains = allTrains.schedule[trainStation].map(train =>{
+
+                    
+                    return train;
+
+            });
+
+    });
+    console.log(trains);
+    res(trains);
+    
+
+});
+
+
+
 const allSubwayDelays = () => new Promise((res, rej) => {
      
      let delays =  mta.status('subway').then(function (allStatus) {
@@ -96,28 +217,6 @@ const subwayStatus = ( train ) => new Promise((res, rej) => {
 
 
 
-
-/*
-mta.stop(635).then(function (result) {
- 
-    console.log(result);
-
-    for (var key in result) {
-        if (result.hasOwnProperty(key)) {
-            console.log(key + " -> " + result[key]);
-        }
-    }
-
-});
-*/
-/*
-
-mta.schedule(635).then(function (result) {
-  console.log(result);
-});
-*/
-
-
 app.get('/webhook', (req, res) => {
     let response;
     //console.log(req.body.result.action);
@@ -126,7 +225,7 @@ app.get('/webhook', (req, res) => {
         subwayStatus() // get specific train status | needs train ex: subwayStatus('7')
     
     */
-    response = subwayStatus('F').then(data =>{
+    response = allSubwayDelays().then(data =>{
         res.send(data);
     });
 
