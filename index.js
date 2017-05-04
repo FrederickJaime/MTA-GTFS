@@ -9,7 +9,7 @@ const express = require('express'),
   Long = require("long"),
   Mta = require('mta-gtfs'),
   bodyParser = require('body-parser'),
-  GoogleMapsLoader = require('google-maps');
+  //GoogleMapsLoader = require('google-maps');
 
   app = express(),
 
@@ -116,10 +116,10 @@ const stationTrains = (trainStation) => new Promise((res, rej) => {
 
     let trains = mta.schedule(trainStation).then(function (allTrains) {
 
-        const northboundTrains = allTrains.schedule[stopID].N.map( train =>{
+        const northboundTrains = allTrains.schedule[trainStation].N.map( train =>{
             return train.routeId;
         });
-        const southboundTrains = allTrains.schedule[stopID].S.map( train =>{
+        const southboundTrains = allTrains.schedule[trainStation].S.map( train =>{
             return train.routeId;
         });
 
