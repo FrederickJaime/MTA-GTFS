@@ -9,11 +9,14 @@ const express = require('express'),
   Long = require("long"),
   Mta = require('mta-gtfs'),
   bodyParser = require('body-parser'),
+  GoogleMapsLoader = require('google-maps');
 
   app = express(),
 
   mtaKey = 'e853b54c8671a51a9f67a2d99f014264',
-  mtaFeedId = "&feed_id=1";
+  mtaFeedId = "&feed_id=1",
+
+  googleMapKey = 'AIzaSyDxa-QViMyG3cpzN4oTiqWWB9wSVZrL6sc';
   /*
     Feed IDs with Train Lines
     1  : 123456S
