@@ -122,41 +122,24 @@ mta.stop(635).then(function (stop) {
 });
 
 */
-mta.schedule(635).then(function (result) {
-    
-    //console.log(result.schedule[635].N);
-    const northboundTrains = result.schedule[635].N.map( train =>{
-
-        //console.log(train.routeId);
-        return train.routeId;
-
-    });
-    const southboundTrains = result.schedule[635].S.map( train =>{
-
-        //console.log(train.routeId);
-        return train.routeId;
-
-    });
-
-    console.log('NorthBound '+[...new Set(northboundTrains)]+' | SouthBound '+ [...new Set(southboundTrains)]);
-    //const labels = [...new Set(result.schedule[635].N)];
-    //console.log(northboundTrains);
-   
-});
 
 const stationTrains = (trainStation) => new Promise((res, rej) => {
 
     let trains = mta.schedule(trainStation).then(function (allTrains) {
 
-            const trains = allTrains.schedule[trainStation].map(train =>{
+        const northboundTrains = allTrains.schedule[stopID].N.map( train =>{
+            return train.routeId;
+        });
+        const southboundTrains = allTrains.schedule[stopID].S.map( train =>{
+            return train.routeId;
+        });
 
-                    
-                    return train;
+        let trainAtStop =   'NorthBound '+[...new Set(northboundTrains)]+' | SouthBound '+ [...new Set(southboundTrains)];
 
-            });
+        return trainAtStop;   
 
     });
-    console.log(trains);
+    
     res(trains);
     
 
@@ -223,9 +206,10 @@ app.get('/webhook', (req, res) => {
     /* Functions (none of these are finalized ):
         allSubwayDelays() // list of all subway delays | no paramater
         subwayStatus() // get specific train status | needs train ex: subwayStatus('7')
+        stationTrains() gets list of trains from Station | needs train id ex: stationTrains(635)
     
     */
-    response = allSubwayDelays().then(data =>{
+    response = stationTrains(635).then(data =>{
         res.send(data);
     });
 
