@@ -107,21 +107,7 @@ mta.status('subway').then(function (result) {
                 });
 });
 
-/*
 
-
-
-
-mta.stop(635).then(function (stop) {
-
-    if(stop.stop_name === '14 St - Union Sq'){
-        console.log(stop.stop_id);
-    }
-
-  
-});
-
-*/
 
 const stationTrains = (trainStation) => new Promise((res, rej) => {
 

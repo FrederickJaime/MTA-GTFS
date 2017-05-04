@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile":"babel -d /",
-    "prepublish":"npm run compile"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +15,7 @@
     "bytebuffer": "^5.0.1",
     "config": "^1.25.1",
     "express": "^4.15.2",
+    "google-maps": "^3.2.1",
     "long": "^3.2.0",
     "mta-gtfs": "^1.0.3",
     "mta-gtfs-realtime-bindings": "0.0.5",
